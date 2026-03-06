@@ -35,7 +35,7 @@ jobs:
       - name: Prepare IPA for Sideloadly
         run: |
           mkdir Payload
-          cp -r build/ios/iphoneos/Runner.app Payload/
+          find . -type d -name "Runner.app" -exec cp -R {} Payload/ \;
           zip -r MovieSwipe_iOS.ipa Payload
           rm -rf Payload
 
