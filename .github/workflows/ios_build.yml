@@ -1,43 +1,41 @@
-name: iOS Build
+name: Build iOS for Sideloadly
 
 on:
-  workflow_dispatch: # Позволяет запускать сборку вручную из вкладки Actions
-  push:
-    branches:
-      - main
-      - master
+  workflow_dispatch: # Запуск вручную кнопкой в Actions
+
+permissions:
+  contents: write
 
 jobs:
   build-ios:
-    name: Build iOS App
+    name: Create IPA
     runs-on: macos-latest
-
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Set up Flutter
+      - uses: actions/checkout@v4
+      
+      - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
-
-      - name: Get dependencies
+          
+      - name: Install Dependencies
         run: flutter pub get
 
-      - name: Build unsigned iOS App
-        env:
-          CODE_SIGNING_ALLOWED: 'NO'
-          CODE_SIGNING_REQUIRED: 'NO'
-        run: flutter build ios --release --no-codesign --build-number=1 --build-name=1.0.0
+      - name: Build iOS Project
+        run: flutter build ios --release --no-codesign
 
-      - name: Package Payload to IPA
+      - name: Prepare IPA for Sideloadly
         run: |
-          mkdir -p Payload
-          mv build/ios/iphoneos/Runner.app Payload/
+          mkdir Payload
+          cp -r build/ios/iphoneos/Runner.app Payload/
           zip -r MovieSwipe_iOS.ipa Payload
+          rm -rf Payload
 
-      - name: Upload IPA Artifact
-        uses: actions/upload-artifact@v4
+      - name: Upload to Release
+        uses: softprops/action-gh-release@v2
         with:
-          name: MovieSwipe_iOS.ipa
-          path: MovieSwipe_iOS.ipa
+          tag_name: ios-v${{ github.run_number }}
+          name: MovieSwipe iOS Build v${{ github.run_number }}
+          files: MovieSwipe_iOS.ipa
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
