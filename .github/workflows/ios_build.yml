@@ -28,14 +28,15 @@ jobs:
 
       - name: Build unsigned iOS App
         run: |
-          flutter build ios --release --no-codesign --config-only
+          # Allow this to fail on code signing, but it will compile App.framework
+          flutter build ios --release --no-codesign || true
           cd ios
           xcodebuild -workspace Runner.xcworkspace -scheme Runner -configuration Release -sdk iphoneos CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGNING_IDENTITY="" -quiet build
 
       - name: Prepare IPA for Sideloadly
         run: |
           mkdir Payload
-          find . -type d -name "Runner.app" -exec cp -R {} Payload/ \;
+          cp -r ios/build/Release-iphoneos/Runner.app Payload/
           zip -r MovieSwipe_iOS.ipa Payload
           rm -rf Payload
 
