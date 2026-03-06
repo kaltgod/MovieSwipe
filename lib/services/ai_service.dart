@@ -70,17 +70,15 @@ Example of ideal response:
             .trim();
 
         // Clean up markdown block if the model included it
-        if (jsonString.startsWith('```json')) {
-          jsonString = jsonString.replaceFirst('```json', '');
-        }
-        if (jsonString.startsWith('```')) {
-          jsonString = jsonString.replaceFirst('```', '');
-        }
-        if (jsonString.endsWith('```')) {
-          jsonString = jsonString.substring(0, jsonString.length - 3);
-        }
+        final regex = RegExp(r'\[.*\]', dotAll: true);
+        final match = regex.firstMatch(jsonString);
 
-        jsonString = jsonString.trim();
+        if (match != null) {
+          jsonString = match.group(0)!;
+        } else {
+          print('Warning: No JSON array found. Raw output: $jsonString');
+          return [];
+        }
 
         try {
           final List<dynamic> decoded = jsonDecode(jsonString);
