@@ -234,6 +234,7 @@ class _SwipeScreenState extends State<SwipeScreen>
 
   void _onPanEnd(DragEndDetails details) {
     final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
 
     // Check if swiped far enough left or right
     if (_dragOffset.dx > screenWidth * 0.4) {
@@ -241,7 +242,10 @@ class _SwipeScreenState extends State<SwipeScreen>
     } else if (_dragOffset.dx < -screenWidth * 0.4) {
       _animateOut(const Offset(-500, 0), 'dislike'); // Swiped Left
     } else if (_dragOffset.dy > 150) {
-      _animateOut(const Offset(0, 500), 'watched'); // Swiped Down
+      _animateOut(
+        Offset(0, screenHeight + 200),
+        'watched',
+      ); // Swiped Down — full exit
     } else if (_dragOffset.dy < -150) {
       _openDetails(); // Swiped Up
     } else {
@@ -290,9 +294,10 @@ class _SwipeScreenState extends State<SwipeScreen>
 
   void _showRatingDialog(Movie movie, Offset targetOffset) {
     double selectedRating = 5.0;
+    bool _didRate = false;
     showDialog(
       context: context,
-      barrierDismissible: false,
+      barrierDismissible: true,
       builder: (context) {
         return StatefulBuilder(
           builder: (context, setDialogState) {
@@ -333,13 +338,8 @@ class _SwipeScreenState extends State<SwipeScreen>
               actions: [
                 TextButton(
                   onPressed: () {
+                    _didRate = true;
                     Navigator.pop(context);
-                    _finalizeSwipe(
-                      movie,
-                      'watched',
-                      targetOffset,
-                      selectedRating,
-                    );
                   },
                   child: const Text(
                     'Сохранить',
@@ -351,7 +351,15 @@ class _SwipeScreenState extends State<SwipeScreen>
           },
         );
       },
-    );
+    ).then((_) {
+      if (_didRate) {
+        // User pressed "Сохранить" — finalize the swipe with rating
+        _finalizeSwipe(movie, 'watched', targetOffset, selectedRating);
+      } else {
+        // User tapped outside — cancel, bring card back
+        _animateBack();
+      }
+    });
   }
 
   void _openDetails() {
@@ -390,6 +398,7 @@ class _SwipeScreenState extends State<SwipeScreen>
 
   void _handleAction(String type) {
     if (_currentIndex >= _movies.length) return;
+    final screenHeight = MediaQuery.of(context).size.height;
 
     setState(() {
       if (type == 'like') {
@@ -400,7 +409,7 @@ class _SwipeScreenState extends State<SwipeScreen>
         _animateOut(const Offset(-500, 0), 'dislike');
       } else if (type == 'watched') {
         _dragAxis = Axis.vertical;
-        _animateOut(const Offset(0, 500), 'watched');
+        _animateOut(Offset(0, screenHeight + 200), 'watched');
       }
     });
   }

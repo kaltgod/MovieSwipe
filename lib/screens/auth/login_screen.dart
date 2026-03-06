@@ -100,125 +100,148 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
       backgroundColor: AppTheme.background,
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const SizedBox(height: 32),
-              // App Logo
-              const Center(
-                child: Icon(
+        child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 32.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const SizedBox(height: 40),
+
+                // App Icon
+                const Icon(
                   Icons.movie_filter_rounded,
                   size: 80,
                   color: AppTheme.primary,
                 ),
-              ),
-              const SizedBox(height: 32),
-              Text(
-                _isLogin ? 'Welcome back' : 'Create account',
-                style: Theme.of(context).textTheme.displayMedium?.copyWith(
-                  fontSize: 32,
-                  letterSpacing: -0.5,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                _isLogin
-                    ? 'Sign in to continue discovering movies.'
-                    : 'Join to find movies with friends.',
-                style: Theme.of(
-                  context,
-                ).textTheme.bodyMedium?.copyWith(fontSize: 16),
-              ),
-              const SizedBox(height: 40),
+                const SizedBox(height: 20),
 
-              if (!_isLogin) ...[
-                _buildTextField(
-                  controller: _usernameController,
-                  label: 'Username',
-                  icon: Icons.person_outline,
-                ),
-                const SizedBox(height: 16),
-              ],
-
-              _buildTextField(
-                controller: _emailController,
-                label: 'Email',
-                icon: Icons.email_outlined,
-                keyboardType: TextInputType.emailAddress,
-              ),
-              const SizedBox(height: 16),
-
-              _buildTextField(
-                controller: _passwordController,
-                label: 'Password',
-                icon: Icons.lock_outline,
-                isPassword: true,
-              ),
-
-              const SizedBox(height: 40),
-
-              ElevatedButton(
-                onPressed: _isLoading ? null : _submit,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppTheme.primary,
-                  foregroundColor: AppTheme.background,
-                  padding: const EdgeInsets.symmetric(vertical: 18),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
+                // App Name
+                Text(
+                  'MovieSwipe',
+                  style: Theme.of(context).textTheme.displayMedium?.copyWith(
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: -0.5,
                   ),
-                  elevation: 0,
                 ),
-                child: _isLoading
-                    ? const SizedBox(
-                        height: 24,
-                        width: 24,
-                        child: CircularProgressIndicator(
-                          color: AppTheme.background,
-                          strokeWidth: 3,
+                const SizedBox(height: 8),
+
+                // Subtitle
+                Text(
+                  _isLogin ? 'С возвращением' : 'Создать аккаунт',
+                  style: const TextStyle(
+                    color: AppTheme.secondary,
+                    fontSize: 16,
+                  ),
+                ),
+                const SizedBox(height: 40),
+
+                // Glass Card with fields
+                Container(
+                  padding: const EdgeInsets.all(24),
+                  decoration: BoxDecoration(
+                    color: AppTheme.surface.withOpacity(0.8),
+                    borderRadius: BorderRadius.circular(24),
+                    border: Border.all(
+                      color: Colors.white.withOpacity(0.06),
+                      width: 1,
+                    ),
+                  ),
+                  child: Column(
+                    children: [
+                      if (!_isLogin) ...[
+                        _buildTextField(
+                          controller: _usernameController,
+                          label: 'Имя пользователя',
+                          icon: Icons.person_outline_rounded,
                         ),
-                      )
-                    : Text(
-                        _isLogin ? 'Sign In' : 'Sign Up',
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
+                        const SizedBox(height: 16),
+                      ],
+                      _buildTextField(
+                        controller: _emailController,
+                        label: 'Почта',
+                        icon: Icons.mail_outline_rounded,
+                        keyboardType: TextInputType.emailAddress,
                       ),
-              ),
-
-              const SizedBox(height: 24),
-
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    _isLogin
-                        ? 'Don\'t have an account? '
-                        : 'Already have an account? ',
-                    style: const TextStyle(color: AppTheme.secondary),
+                      const SizedBox(height: 16),
+                      _buildTextField(
+                        controller: _passwordController,
+                        label: 'Пароль',
+                        icon: Icons.lock_outline_rounded,
+                        isPassword: true,
+                      ),
+                    ],
                   ),
-                  TextButton(
-                    onPressed: () {
-                      setState(() {
-                        _isLogin = !_isLogin;
-                      });
-                    },
-                    style: TextButton.styleFrom(
-                      foregroundColor: AppTheme.primary,
-                      padding: EdgeInsets.zero,
-                      minimumSize: Size.zero,
-                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ),
+                const SizedBox(height: 32),
+
+                // Sign In / Sign Up Button
+                SizedBox(
+                  width: double.infinity,
+                  height: 56,
+                  child: ElevatedButton(
+                    onPressed: _isLoading ? null : _submit,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppTheme.primary,
+                      foregroundColor: AppTheme.background,
+                      disabledBackgroundColor: AppTheme.primary.withOpacity(
+                        0.5,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(28),
+                      ),
+                      elevation: 0,
                     ),
-                    child: Text(
-                      _isLogin ? 'Sign up' : 'Log in',
-                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    child: _isLoading
+                        ? const SizedBox(
+                            height: 24,
+                            width: 24,
+                            child: CircularProgressIndicator(
+                              color: AppTheme.background,
+                              strokeWidth: 3,
+                            ),
+                          )
+                        : Text(
+                            _isLogin ? 'Войти' : 'Зарегистрироваться',
+                            style: const TextStyle(
+                              fontSize: 17,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                  ),
+                ),
+                const SizedBox(height: 20),
+
+                // Toggle Login/Register
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      _isLogin = !_isLogin;
+                    });
+                  },
+                  child: Text.rich(
+                    TextSpan(
+                      text: _isLogin ? 'Нет аккаунта? ' : 'Уже есть аккаунт? ',
+                      style: const TextStyle(
+                        color: AppTheme.secondary,
+                        fontSize: 14,
+                      ),
+                      children: [
+                        TextSpan(
+                          text: _isLogin ? 'Регистрация' : 'Войти',
+                          style: const TextStyle(
+                            color: AppTheme.primary,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                ],
-              ),
-            ],
+                ),
+                const SizedBox(height: 40),
+              ],
+            ),
           ),
         ),
       ),
@@ -236,13 +259,17 @@ class _LoginScreenState extends State<LoginScreen> {
       controller: controller,
       obscureText: isPassword,
       keyboardType: keyboardType,
-      style: const TextStyle(color: AppTheme.primary),
+      style: const TextStyle(color: AppTheme.primary, fontSize: 16),
       decoration: InputDecoration(
-        labelText: label,
-        labelStyle: const TextStyle(color: AppTheme.secondary),
-        prefixIcon: Icon(icon, color: AppTheme.secondary),
+        hintText: label,
+        hintStyle: const TextStyle(color: AppTheme.secondary, fontSize: 16),
+        prefixIcon: Icon(icon, color: AppTheme.secondary, size: 22),
         filled: true,
-        fillColor: AppTheme.surface,
+        fillColor: Colors.white.withOpacity(0.06),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 18,
+        ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
           borderSide: BorderSide.none,
