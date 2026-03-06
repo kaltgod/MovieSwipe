@@ -21,8 +21,11 @@ jobs:
       - name: Install Dependencies
         run: flutter pub get
 
-      - name: Build iOS Project
-        run: flutter build ios --release --no-codesign
+      - name: Build unsigned iOS App
+        run: |
+          flutter build ios --release --no-codesign --config-only
+          cd ios
+          xcodebuild -workspace Runner.xcworkspace -scheme Runner -configuration Release -sdk iphoneos CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGNING_IDENTITY="" -quiet build
 
       - name: Prepare IPA for Sideloadly
         run: |
