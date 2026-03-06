@@ -22,16 +22,23 @@ jobs:
         run: flutter pub get
 
       - name: Create .env file
-        env:
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
-          TMDB_API_KEY: ${{ secrets.TMDB_API_KEY }}
-          HUGGINGFACE_API_KEY: '${{ secrets.HUGGINGFACE_API_KEY }}${{ secrets.HUGGING_FACE_API_KEY }}'
         run: |
-          echo "SUPABASE_URL=$SUPABASE_URL" > .env
-          echo "SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY" >> .env
-          echo "TMDB_API_KEY=$TMDB_API_KEY" >> .env
-          echo "HUGGINGFACE_API_KEY=$HUGGINGFACE_API_KEY" >> .env
+          echo "SUPABASE_URL=${{ secrets.SUPABASE_URL }}" > .env
+          echo "SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}" >> .env
+          echo "TMDB_API_KEY=${{ secrets.TMDB_API_KEY }}" >> .env
+          echo "HUGGINGFACE_API_KEY=${{ secrets.HUGGINGFACE_API_KEY }}" >> .env
+
+      - name: Debug - Verify .env file
+        run: |
+          echo "=== .env file check ==="
+          echo "Number of lines: $(wc -l < .env)"
+          while IFS='=' read -r key value; do
+            if [ -z "$value" ]; then
+              echo "WARNING: $key is EMPTY!"
+            else
+              echo "OK: $key has value (${#value} chars)"
+            fi
+          done < .env
 
       - name: Build unsigned iOS App
         run: |
